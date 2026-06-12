@@ -1,18 +1,43 @@
-package com.tagai.presentation.note_list
+package com.tagai.presentation.notelist
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,38 +53,28 @@ import org.koin.androidx.compose.koinViewModel
 fun NoteListScreen(
     onNavigateToAdd: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: NoteListViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
+    // Stable references for lambdas to prevent LaunchedEffect restarts
+    val currentOnNavigateToAdd by rememberUpdatedState(onNavigateToAdd)
+    val currentOnNavigateToEdit by rememberUpdatedState(onNavigateToEdit)
+
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is NoteListEffect.NavigateToAdd -> onNavigateToAdd()
-                is NoteListEffect.NavigateToEdit -> onNavigateToEdit(effect.noteId)
+                is NoteListEffect.NavigateToAdd -> currentOnNavigateToAdd()
+                is NoteListEffect.NavigateToEdit -> currentOnNavigateToEdit(effect.noteId)
             }
         }
     }
 
     Scaffold(
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Notes",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = (-1).sp
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
-                )
-            )
-        },
+        topBar = { NoteListTopBar() },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.onAddClick() },
@@ -87,23 +102,56 @@ fun NoteListScreen(
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(
-                        items = state.filteredNotes,
-                        key = { it.id }
-                    ) { note ->
-                        NoteItem(
-                            note = note,
-                            onClick = { viewModel.onNoteClick(note.id) },
-                            onDelete = { viewModel.onEvent(NoteListEvent.DeleteNote(note)) }
-                        )
-                    }
-                }
+                NotesList(
+                    notes = state.filteredNotes,
+                    onNoteClick = viewModel::onNoteClick,
+                    onDeleteNote = { viewModel.onEvent(NoteListEvent.DeleteNote(it)) }
+                )
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun NoteListTopBar() {
+    TopAppBar(
+        title = {
+            Text(
+                "Notes",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-1).sp
+                )
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
+        )
+    )
+}
+
+@Composable
+private fun NotesList(
+    notes: List<Note>,
+    onNoteClick: (Long) -> Unit,
+    onDeleteNote: (Note) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(
+            items = notes,
+            key = { it.id }
+        ) { note ->
+            NoteItem(
+                note = note,
+                onClick = { onNoteClick(note.id) },
+                onDelete = { onDeleteNote(note) }
+            )
         }
     }
 }
@@ -113,10 +161,11 @@ fun NoteListScreen(
 fun TagFilterRow(
     tags: List<String>,
     selectedTag: String?,
-    onTagClick: (String?) -> Unit
+    onTagClick: (String?) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     LazyRow(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -143,11 +192,12 @@ fun TagFilterRow(
 fun NoteItem(
     note: Note,
     onClick: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface

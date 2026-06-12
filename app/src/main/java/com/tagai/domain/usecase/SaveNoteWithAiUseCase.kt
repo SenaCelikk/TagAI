@@ -11,7 +11,7 @@ class SaveNoteWithAiUseCase(
 ) {
     suspend operator fun invoke(content: String): Result<Unit> {
         val result = aiService.generateMetadata(content)
-        
+
         val metadata = result.getOrElse {
             // Fallback: If AI fails (e.g. invalid API key), save the note with default title/no tags
             NoteMetadata(

@@ -1,4 +1,4 @@
-package com.tagai.presentation.note_add
+package com.tagai.presentation.noteadd
 
 data class NoteAddState(
     val content: String = "",

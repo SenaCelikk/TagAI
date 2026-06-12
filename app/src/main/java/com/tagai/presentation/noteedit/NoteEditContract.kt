@@ -1,6 +1,4 @@
-package com.tagai.presentation.note_edit
-
-import com.tagai.domain.model.Note
+package com.tagai.presentation.noteedit
 
 data class NoteEditState(
     val title: String = "",

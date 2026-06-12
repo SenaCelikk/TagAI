@@ -10,9 +10,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.tagai.presentation.note_add.NoteAddScreen
-import com.tagai.presentation.note_edit.NoteEditScreen
-import com.tagai.presentation.note_list.NoteListScreen
+import com.tagai.presentation.noteadd.NoteAddScreen
+import com.tagai.presentation.noteedit.NoteEditScreen
+import com.tagai.presentation.notelist.NoteListScreen
 import com.tagai.ui.theme.TagAiTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TagAiTheme(){
+            TagAiTheme {
                 TagAINavHost()
             }
         }

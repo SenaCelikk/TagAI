@@ -1,4 +1,4 @@
-package com.tagai.presentation.note_edit
+package com.tagai.presentation.noteedit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,12 +50,14 @@ class NoteEditViewModel(
             _state.update { it.copy(isLoading = true) }
             val note = repository.getNoteById(id)
             if (note != null) {
-                _state.update { it.copy(
-                    title = note.title,
-                    content = note.content,
-                    tags = note.tags,
-                    isLoading = false
-                ) }
+                _state.update {
+                    it.copy(
+                        title = note.title,
+                        content = note.content,
+                        tags = note.tags,
+                        isLoading = false
+                    )
+                }
             } else {
                 _state.update { it.copy(isLoading = false, error = "Note not found") }
             }

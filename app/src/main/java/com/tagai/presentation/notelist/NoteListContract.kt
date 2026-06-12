@@ -1,4 +1,4 @@
-package com.tagai.presentation.note_list
+package com.tagai.presentation.notelist
 
 import com.tagai.domain.model.Note
 

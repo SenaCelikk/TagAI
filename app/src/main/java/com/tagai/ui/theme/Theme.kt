@@ -2,7 +2,6 @@ package com.tagai.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -23,17 +22,17 @@ private val VintagePaperScheme = lightColorScheme(
     onPrimary = Color.White,
     primaryContainer = VintagePurpleContainer,
 
-    background = PaperBase,        // The desk/background
+    background = PaperBase, // The desk/background
     onBackground = InkBlack,
 
-    surface = PaperDarker,         // The actual note paper
+    surface = PaperDarker, // The actual note paper
     onSurface = InkBlack,
 
-    surfaceVariant = PaperBase,    // Inside the note
-    outline = PaperBorder          // The paper edge
+    surfaceVariant = PaperBase, // Inside the note
+    outline = PaperBorder // The paper edge
 )
 
-
+@Suppress("CompositionLocalAllowlist")
 val LocalTagAiColors = staticCompositionLocalOf {
     TagAiCustomColors(aiGlow = Color.Unspecified, tagChipBackground = Color.Unspecified)
 }

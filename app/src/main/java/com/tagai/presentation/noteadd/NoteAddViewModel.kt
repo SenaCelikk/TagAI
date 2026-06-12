@@ -1,4 +1,4 @@
-package com.tagai.presentation.note_add
+package com.tagai.presentation.noteadd
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class NoteAddViewModel(
     private val saveNoteWithAiUseCase: SaveNoteWithAiUseCase
@@ -34,14 +35,22 @@ class NoteAddViewModel(
         if (content.isBlank()) return
 
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-            saveNoteWithAiUseCase(content)
-                .onSuccess {
+            try {
+                _state.update { it.copy(isLoading = true, error = null) }
+                val result = saveNoteWithAiUseCase(content)
+
+                result.onSuccess {
+                    // Update state FIRST
+                    _state.update { it.copy(isLoading = false) }
+                    // Then send effect
                     _effect.send(NoteAddEffect.NavigateBack)
                 }
-                .onFailure { error ->
+                result.onFailure { error ->
                     _state.update { it.copy(isLoading = false, error = error.message) }
                 }
+            } catch (e: IOException) {
+                _state.update { it.copy(isLoading = false, error = e.message) }
+            }
         }
     }
 }

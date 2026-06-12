@@ -1,0 +1,15 @@
+complexity:
+  LongMethod:
+    active: false
+
+naming:
+  FunctionNaming:
+    active: false
+
+style:
+  MagicNumber:
+    active: false
+
+formatting:
+  active: true
+  autoCorrect: true

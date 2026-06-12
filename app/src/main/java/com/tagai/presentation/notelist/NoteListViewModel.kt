@@ -1,4 +1,4 @@
-package com.tagai.presentation.note_list
+package com.tagai.presentation.notelist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,12 +32,14 @@ class NoteListViewModel(
     private fun observeNotes() {
         getNotesUseCase()
             .onEach { notes ->
-                _state.update { it.copy(
-                    notes = notes,
-                    availableTags = notes.flatMap { it.tags }.distinct(),
-                    filteredNotes = filterNotes(notes, it.selectedTag),
-                    isLoading = false
-                ) }
+                _state.update {
+                    it.copy(
+                        notes = notes,
+                        availableTags = notes.flatMap { it.tags }.distinct(),
+                        filteredNotes = filterNotes(notes, it.selectedTag),
+                        isLoading = false
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -45,10 +47,12 @@ class NoteListViewModel(
     fun onEvent(event: NoteListEvent) {
         when (event) {
             is NoteListEvent.FilterByTag -> {
-                _state.update { it.copy(
-                    selectedTag = event.tag,
-                    filteredNotes = filterNotes(it.notes, event.tag)
-                ) }
+                _state.update {
+                    it.copy(
+                        selectedTag = event.tag,
+                        filteredNotes = filterNotes(it.notes, event.tag)
+                    )
+                }
             }
             is NoteListEvent.DeleteNote -> {
                 viewModelScope.launch {

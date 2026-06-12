@@ -8,9 +8,9 @@ import com.tagai.domain.repository.AIGenerationService
 import com.tagai.domain.repository.NoteRepository
 import com.tagai.domain.usecase.GetNotesUseCase
 import com.tagai.domain.usecase.SaveNoteWithAiUseCase
-import com.tagai.presentation.note_add.NoteAddViewModel
-import com.tagai.presentation.note_edit.NoteEditViewModel
-import com.tagai.presentation.note_list.NoteListViewModel
+import com.tagai.presentation.noteadd.NoteAddViewModel
+import com.tagai.presentation.noteedit.NoteEditViewModel
+import com.tagai.presentation.notelist.NoteListViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -29,7 +29,7 @@ val appModule = module {
     single { get<NoteDatabase>().noteDao }
 
     single<NoteRepository> { NoteRepositoryImpl(get()) }
-    
+
     single<AIGenerationService> { MockAIGenerationService() }
 
     factory { GetNotesUseCase(get()) }

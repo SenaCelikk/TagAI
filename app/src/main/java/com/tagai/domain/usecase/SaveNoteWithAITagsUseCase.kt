@@ -3,6 +3,7 @@ package com.tagai.domain.usecase
 import com.tagai.domain.model.Note
 import com.tagai.domain.repository.AIGenerationService
 import com.tagai.domain.repository.NoteRepository
+import java.io.IOException
 
 class SaveNoteWithAITagsUseCase(
     private val repository: NoteRepository,
@@ -21,7 +22,7 @@ class SaveNoteWithAITagsUseCase(
                 )
                 repository.insertNote(note)
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             Result.failure(e)
         }
     }
