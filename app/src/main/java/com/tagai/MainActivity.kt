@@ -13,10 +13,13 @@ import androidx.navigation.navArgument
 import com.tagai.presentation.noteadd.NoteAddScreen
 import com.tagai.presentation.noteedit.NoteEditScreen
 import com.tagai.presentation.notelist.NoteListScreen
+import com.tagai.presentation.splash.SplashScreen
 import com.tagai.ui.theme.TagAiTheme
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -33,8 +36,17 @@ fun TagAINavHost() {
 
     NavHost(
         navController = navController,
-        startDestination = "note_list"
+        startDestination = "splash"
     ) {
+        composable("splash") {
+            SplashScreen(
+                onSplashFinished = {
+                    navController.navigate("note_list") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
         composable("note_list") {
             NoteListScreen(
                 onNavigateToAdd = {

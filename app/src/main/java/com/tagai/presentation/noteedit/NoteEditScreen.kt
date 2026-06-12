@@ -38,6 +38,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Surface
+import androidx.compose.ui.tooling.preview.Preview
+import com.tagai.ui.theme.TagAiTheme
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,7 +116,7 @@ fun NoteEditScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NoteEditTopBar(
+internal fun NoteEditTopBar(
     isLoading: Boolean,
     onNavigateBack: () -> Unit,
     onSave: () -> Unit
@@ -138,7 +141,7 @@ private fun NoteEditTopBar(
 }
 
 @Composable
-private fun TagRow(
+internal fun TagRow(
     tags: List<String>,
     onRemoveTag: (String) -> Unit
 ) {
@@ -164,7 +167,7 @@ private fun TagRow(
 }
 
 @Composable
-private fun AddTagSection(
+internal fun AddTagSection(
     newTag: String,
     onNewTagChange: (String) -> Unit,
     onAddTag: () -> Unit
@@ -181,6 +184,151 @@ private fun AddTagSection(
         )
         IconButton(onClick = onAddTag) {
             Icon(Icons.Default.Add, contentDescription = "Add Tag")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun NoteEditScreenPreview() {
+    TagAiTheme {
+        Scaffold(
+            topBar = {
+                NoteEditTopBar(
+                    isLoading = false,
+                    onNavigateBack = {},
+                    onSave = {}
+                )
+            }
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = "Meeting notes from the weekly standup with the team.",
+                    onValueChange = {},
+                    label = { Text("Content") },
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text("Tags", style = MaterialTheme.typography.titleMedium)
+
+                TagRow(
+                    tags = listOf("Work", "Meeting", "Important"),
+                    onRemoveTag = {}
+                )
+
+                AddTagSection(
+                    newTag = "",
+                    onNewTagChange = {},
+                    onAddTag = {}
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun NoteEditTopBarPreview() {
+    TagAiTheme {
+        NoteEditTopBar(
+            isLoading = false,
+            onNavigateBack = {},
+            onSave = {}
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun NoteEditTopBarLoadingPreview() {
+    TagAiTheme {
+        NoteEditTopBar(
+            isLoading = true,
+            onNavigateBack = {},
+            onSave = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TagRowPreview() {
+    TagAiTheme {
+        Surface {
+            TagRow(
+                tags = listOf("Kotlin", "Android", "Compose", "Jetpack"),
+                onRemoveTag = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AddTagSectionPreview() {
+    TagAiTheme {
+        Surface {
+            AddTagSection(
+                newTag = "New Tag",
+                onNewTagChange = {},
+                onAddTag = {}
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun NoteEditScreenEmptyPreview() {
+    TagAiTheme {
+        Scaffold(
+            topBar = {
+                NoteEditTopBar(
+                    isLoading = false,
+                    onNavigateBack = {},
+                    onSave = {}
+                )
+            }
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = "",
+                    onValueChange = {},
+                    label = { Text("Content") },
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text("Tags", style = MaterialTheme.typography.titleMedium)
+
+                TagRow(
+                    tags = emptyList(),
+                    onRemoveTag = {}
+                )
+
+                AddTagSection(
+                    newTag = "",
+                    onNewTagChange = {},
+                    onAddTag = {}
+                )
+            }
         }
     }
 }
